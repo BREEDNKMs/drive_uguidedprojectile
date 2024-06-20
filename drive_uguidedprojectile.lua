@@ -47,13 +47,13 @@ drive.Register( "drive_uguidedprojectile",
 		-- if !self.Entity.GetFlightVelocity then return end 
 		-- if isfunction(self.Entity.SetPredictable) then self.Entity:SetPredictable(true) end 
 		-- attack controls 
-		if FrameTime() == 0 then return end 
 		if ( mv:KeyPressed( IN_ATTACK ) ) then self.Player:GetActiveWeapon():PrimaryAttack() end	
 		if ( mv:KeyPressed( IN_ATTACK2 ) ) then self.Player:GetActiveWeapon():SecondaryAttack() end	
 		
 		local projSpeed = self.Entity.flVelocity or 550 
 		local turnStrength = self.Entity.flTurnStrength or 1500 
-		local rollMagnitude = self.Entity.flRollMagnitude or 1 
+		local rollMagnitude = self.Entity.flRollMagnitude or 10 
+		self.Speed = projSpeed 
 		mv:SetMaxSpeed(projSpeed) 
 
 		local deltaTime = FrameTime() 
@@ -106,7 +106,8 @@ drive.Register( "drive_uguidedprojectile",
 		local newVelocity = currentVelocity + guideRotation:Forward() * turnStrength * deltaTime
 		newVelocity:Normalize()
 		newVelocity = newVelocity * (projSpeed) 
-		mv:SetVelocity(newVelocity) 
+		self.Velocity = newVelocity 
+		-- mv:SetVelocity(newVelocity) 
 		local newAngles = newVelocity:Angle()
 
 		-- Roll warhead based on acceleration
@@ -132,7 +133,8 @@ drive.Register( "drive_uguidedprojectile",
 		newAngles.roll = newAngles.roll * smoothRoll + oldRoll * (1 - smoothRoll) 
 		-- if !oldanglesset then self.Entity:SetNWAngle("u_oldeyeangles",mv:GetOldAngles()) end 
 		
-		mv:SetAngles(newAngles) 
+		self.Angles = newAngles 
+		-- mv:SetAngles(newAngles) 
 		-- self.Entity:SetNWAngle("u_oldangles",newAngles) 
 		-- mv:SetOldAngles(newAngles) 
 		
@@ -146,11 +148,12 @@ drive.Register( "drive_uguidedprojectile",
 	--
 	Move = function( self, mv ) 
 		
-		-- mv:SetAngles(Angle(xmove,(ymove),(spinmove)-lerpmove)) -- this will turn our aircraft around 
-		-- mv:SetVelocity(self.Entity:GetForward()*self.Entity:GetNWInt("real_velocity")) 
-		-- mv:SetVelocity(self.Entity:GetForward()*self.Entity:GetFlightVelocity_Real()) 
-		-- mv:SetVelocity(self.Entity:GetForward()*self.Entity.real_velocity) 
-		-- mv:SetOrigin( mv:GetOrigin() + mv:GetVelocity() ) 
+		
+		PrintTable(self) 
+		mv:SetAngles(self.Angles) 
+		mv:SetVelocity(self.Velocity) 
+		self.Entity:SetLocalVelocity( mv:GetVelocity() ) 
+		self.Entity:SetAngles(mv:GetAngles()) 
 
 	end,
 
@@ -166,8 +169,8 @@ drive.Register( "drive_uguidedprojectile",
 		
 		-- self.Entity:SetNetworkOrigin( mv:GetOrigin() ) 
 		-- self.Player:SetNetworkOrigin(mv:GetOrigin()) 
-		self.Entity:SetLocalVelocity( mv:GetVelocity() ) 
-		self.Entity:SetAngles(mv:GetAngles()) 
+		-- self.Entity:SetLocalVelocity( mv:GetVelocity() ) 
+		-- self.Entity:SetAngles(mv:GetAngles()) 
 		-- self.Entity:SetLocalAngularVelocity( mv:GetAngles() ) 
 		
 		-- print("finished move")
