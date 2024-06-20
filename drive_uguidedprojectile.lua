@@ -52,7 +52,8 @@ drive.Register( "drive_uguidedprojectile",
 		if ( mv:KeyPressed( IN_ATTACK2 ) ) then self.Player:GetActiveWeapon():SecondaryAttack() end	
 		
 		local projSpeed = self.Entity.flVelocity or 550 
-		local turnStrength = self.Entity.turnStrength or 1500 
+		local turnStrength = self.Entity.flTurnStrength or 1500 
+		local rollMagnitude = self.Entity.flRollMagnitude or 1 
 		mv:SetMaxSpeed(projSpeed) 
 
 		local deltaTime = FrameTime() 
@@ -110,7 +111,7 @@ drive.Register( "drive_uguidedprojectile",
 
 		-- Roll warhead based on acceleration
 		local xAxis, yAxis, zAxis = newAngles:Forward(), newAngles:Right(), newAngles:Up()
-		local rollMag = 10 * yAxis:Dot(newVelocity - oldVelocity) / deltaTime
+		local rollMag = rollMagnitude * yAxis:Dot(newVelocity - oldVelocity) / deltaTime
 
 		if rollMag > 0 then 
 			newAngles.roll = math.min(12000 / 65536 * 360, rollMag / 65536 * 360) 
