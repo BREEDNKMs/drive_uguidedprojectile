@@ -149,7 +149,6 @@ drive.Register( "drive_uguidedprojectile",
 	Move = function( self, mv ) 
 		
 		
-		PrintTable(self) 
 		mv:SetAngles(self.Angles) 
 		mv:SetVelocity(self.Velocity) 
 		self.Entity:SetLocalVelocity( mv:GetVelocity() ) 
